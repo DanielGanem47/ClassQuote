@@ -6,3 +6,16 @@
 //
 
 import Foundation
+
+final class Quote: ObservableObject {
+    let service: QuoteService = QuoteService()
+    
+    @Published var citation: String = ""
+    @Published var author: String = ""
+    
+    func getQuote() {
+        service.getQuote()
+        citation = service.citation
+        author = service.author
+    }
+}

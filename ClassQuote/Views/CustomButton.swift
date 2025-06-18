@@ -8,11 +8,27 @@
 import SwiftUI
 
 struct CustomButton: View {
+    var text: String
+    var symbol: String
+    var color: Color
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        HStack(spacing: 10) {
+            Spacer()
+            Image(systemName: symbol)
+            Text(text)
+            Spacer()
+        }
+        .padding()
+        .background(color)
+        .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        .foregroundStyle(.white)
+        .fontWeight(.semibold)
     }
 }
 
 #Preview {
-    CustomButton()
+    CustomButton(text: "Get quote",
+                 symbol: "arrow.clockwise",
+                 color: .blue)
 }

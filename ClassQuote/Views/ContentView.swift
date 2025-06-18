@@ -8,12 +8,29 @@
 import SwiftUI
 
 struct ContentView: View {
+    @ObservedObject var quote: Quote = Quote()
+    
     var body: some View {
         VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundStyle(.tint)
-            Text("Hello, world!")
+            Image(systemName:"photo")
+                .resizable()
+                .aspectRatio(contentMode: .fit)
+                .background(in: .rect)
+                .clipShape(Rectangle())
+                .overlay {
+                    VStack {
+                        Text($quote.citation)
+                        Text($quote.author)
+                    }
+                    .multilineTextAlignment(.leading)
+                }
+            Spacer()
+            CustomButton(text: "Get quote",
+                         symbol: "arrow.clockwise",
+                         color: .blue)
+            .onTapGesture {
+                quote.getQuote()
+            }
         }
         .padding()
     }
