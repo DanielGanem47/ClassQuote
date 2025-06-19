@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct ContentView: View {
-    @ObservedObject var quote: Quote = Quote()
+    @StateObject private var quoteService = QuoteService()
     
     var body: some View {
         VStack {
@@ -18,21 +18,31 @@ struct ContentView: View {
                 .background(in: .rect)
                 .clipShape(Rectangle())
                 .overlay {
-                    VStack {
-                        Text($quote.citation)
-                        Text($quote.author)
+                    VStack(alignment: .leading) {
+                        if let quote = quoteService.quote {
+                            Text(quote.citation)
+                                .font(.headline)
+                                .foregroundColor(.white)
+                            Text(quote.author)
+                                .font(.subheadline)
+                                .foregroundColor(.white)
+                        }
                     }
-                    .multilineTextAlignment(.leading)
                 }
             Spacer()
             CustomButton(text: "Get quote",
                          symbol: "arrow.clockwise",
                          color: .blue)
             .onTapGesture {
-                quote.getQuote()
+                Task {
+                    await quoteService.getQuote()
+                }
             }
         }
         .padding()
+        .task {
+            await quoteService.getQuote()
+        }
     }
 }
 

@@ -7,35 +7,24 @@
 
 import Foundation
 
-final class QuoteService {
-    private let baseURL: URL = URL.init(filePath: "http://api.forismatic.com/api/1.0/")!
+final class QuoteService: ObservableObject {
+    private let url: String = "http://api.forismatic.com/api/1.0/?method=getQuote&format=json&lang=en"
     
-    @Published var quote: Quote = Quote()
+    @Published var quote: Quote?
     
     func getQuote() async {
-        var request: URLRequest = URLRequest(url: baseURL)
-        request.httpMethod = "POST"
-        
-        let body: String = "method=getQuote&format=json&lang=en"
-        request.httpBody = body.data(using: .utf8)
-        
-        let session: URLSession = URLSession(configuration: .default)
-        let task = session.dataTask(with: request) { data, response, error in
-            guard let data = data, error == nil else {
-                return
-            }
-            guard let response = response as? HTTPURLResponse, response.statusCode == 200 else {
-                return
-            }
-            let decode: JSONDecoder = JSONDecoder()
-            guard let responseJSON = try? decode.decode(quote.self, from: data),
-                    let text = responseJSON["quoteText"],
-                    let auth = responseJSON["quoteAuthor"] else {
-                return
-            }
-            self.citation = text
-            self.author = auth
+        guard let url = URL(string: url) else {
+            return
         }
-        task.resume()
+        
+        do {
+            let (data, _) = try await URLSession.shared.data(from: url)
+            let decoded = try JSONDecoder().decode(Quote.self, from: data)
+            Task {
+                self.quote = decoded
+            }
+        } catch {
+            print("Erreur de chargement : \(error)")
+        }
     }
 }

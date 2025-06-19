@@ -7,15 +7,12 @@
 
 import Foundation
 
-final class Quote: ObservableObject {
-    let service: QuoteService = QuoteService()
-    
-    @Published var citation: String = ""
-    @Published var author: String = ""
-    
-    func getQuote() {
-        service.getQuote()
-        citation = service.citation
-        author = service.author
+struct Quote: Codable {
+    let citation: String
+    let author: String
+
+    enum CodingKeys: String, CodingKey {
+        case citation = "quoteText"
+        case author = "quoteAuthor"
     }
 }
