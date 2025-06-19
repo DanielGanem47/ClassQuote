@@ -6,19 +6,17 @@
 //
 
 import Foundation
-import SwiftUICore
 
 final class QuoteService {
     private let baseURL: URL = URL.init(filePath: "http://api.forismatic.com/api/1.0/")!
     
-    var citation: String = ""
-    var author: String = ""
+    @Published var quote: Quote = Quote()
     
-    func getQuote() {
+    func getQuote() async {
         var request: URLRequest = URLRequest(url: baseURL)
         request.httpMethod = "POST"
         
-        let body: String = "method=getQuote&format=json@lang=en"
+        let body: String = "method=getQuote&format=json&lang=en"
         request.httpBody = body.data(using: .utf8)
         
         let session: URLSession = URLSession(configuration: .default)
@@ -30,7 +28,7 @@ final class QuoteService {
                 return
             }
             let decode: JSONDecoder = JSONDecoder()
-            guard let responseJSON = try? decode.decode([String : String].self, from: data),
+            guard let responseJSON = try? decode.decode(quote.self, from: data),
                     let text = responseJSON["quoteText"],
                     let auth = responseJSON["quoteAuthor"] else {
                 return
