@@ -20,9 +20,7 @@ final class QuoteService: ObservableObject {
         do {
             let (data, _) = try await URLSession.shared.data(from: url)
             let decoded = try JSONDecoder().decode(Quote.self, from: data)
-            Task {
-                self.quote = decoded
-            }
+            quote = decoded
         } catch {
             print("Erreur de chargement : \(error)")
         }
